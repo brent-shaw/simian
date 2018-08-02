@@ -4,8 +4,9 @@ from colourterm import tform
 #==============================================================================
 
 class industial_object():
-    def __init__(self, v=0, l=0, t=0, d=1):
-        #print("Initialised industial_object")
+    def __init__(self, label, v=0, l=0, t=0, d=1):
+        print("  Initialised industial_object")
+        self.label = label
         self.capacity = v
         self.value = v
         self.limit = l
@@ -50,9 +51,10 @@ class industial_object():
 
 class industrial_sensor():
 
-    def __init__(self, o):
+    def __init__(self, o, l):
         self.source = o
-        #print("Initialised sensor")
+        self.label = l
+        print("  Initialised sensor")
 
     def read(self):
         return self.source.value
@@ -63,21 +65,21 @@ class industrial_sensor():
 class actuator():
 
     def __init__(self):
-        print("Initialised actuator")
+        print("  Initialised actuator")
 
 #==============================================================================
 
 class rtu():
 
     def __init__(self):
-        print("Initialised rtu")
+        print("  Initialised rtu")
 
 #==============================================================================
 
 class plc():
 
     def __init__(self):
-        print("Initialised plc")
+        print("  Initialised plc")
 
 #==============================================================================
 
@@ -88,7 +90,7 @@ class control_system():
         self.actuators = []
         self.plcs = []
         self.rtus = []
-        #print("Initialised control_system")
+        print("  Initialised control_system")
 
     def addObject(self, o):
         self.objects.append(o)
@@ -98,6 +100,11 @@ class control_system():
 
     def addPLC(self, o):
         self.plcs.append(o)
+
+    def getObject(self, l):
+        for o in self.objects:
+            if o.label == l:
+                return o
 
     def update(self):
         update = ["SYSTEM UPDATE"]

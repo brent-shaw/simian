@@ -44,7 +44,7 @@ def startup(config):
 
     print("Fetching configuration")
     sysconf = get_config(config)
-    print(json.dumps(sysconf, indent=2, sort_keys=True))
+    #print(json.dumps(sysconf, indent=2, sort_keys=True))
 
     print(tform("Program running",'OKGREEN'))
 
@@ -54,9 +54,6 @@ def startup(config):
 
 def shutdown(logs):
     print(tform("Halting program",'WARNING'))
-
-    # for line in logs:
-    #     print(line)
 
     store_log('tank_sim.log', logs)
 
@@ -90,6 +87,28 @@ def runSimulation(system, cycles):
     report = system.reportTanks(None)
     yield report
 
+def JSON2Obj(d):
+    print(tform("Building control system",'HEADER'))
+    system = control_system()
+
+    for key, value in d.items():
+        s = d[key]
+        for key, value in s.items():
+            current = key
+            si = s[key]
+            for l in si:
+                if current == "objects":
+                    system.addObject(industial_object(l["label"], l["value"]))
+                if current == "sensors":
+                    obj = system.getObject(l["object"])
+                    system.addSensor(industrial_sensor(obj, l["label"]))
+                if current == "actuators":
+                    pass
+                if current == "plcs":
+                    pass
+
+    return system
+
 def main():
     if(len(sys.argv) < 3):
         print("\r"+tform("Incorrect usage.", "FAIL"))
@@ -99,18 +118,9 @@ def main():
     config = str(sys.argv[1])
     cycles = int(sys.argv[2])
 
-    startup(config)
+    sysconf = startup(config)
 
-    system = control_system()
-
-    system.addObject(industial_object(1000))
-    system.addObject(industial_object(1000))
-    system.addObject(industial_object(1000))
-    system.addObject(industial_object(1000))
-    system.addObject(industial_object(1000))
-
-    for obj in system.objects:
-        system.addSensor(industrial_sensor(obj))
+    system = JSON2Obj(sysconf)
 
     try:
         print("Running simulation for "+str(cycles)+" cycles.")

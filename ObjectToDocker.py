@@ -36,11 +36,11 @@ def store_log(filename, log):
 def startup(config):
     print(tform("Starting program",'HEADER'))
 
-    print("Fetching configuration")
+    print("  Fetching configuration")
     sysconf = get_config(config)
     #print(json.dumps(sysconf, indent=2, sort_keys=True))
 
-    print(tform("Program running",'OKGREEN'))
+    print("  Program running")
 
     return sysconf
 
@@ -48,15 +48,16 @@ def startup(config):
 
 def shutdown(logs):
     print(tform("Halting program",'WARNING'))
+    print("  Do not quit, storing logs")
 
     store_log('tank_sim.log', logs)
 
-    print(tform("Program ended", 'OKGREEN'))
+    print("  Program ended")
 
 #------------------------------------------------------------------------------
 
 def JSON2Obj(d):
-    print(tform("Building control system",'HEADER'))
+    print("Building control system")
     system = control_system()
 
     for key, value in d.items():
@@ -73,11 +74,13 @@ def JSON2Obj(d):
                 if current == "actuators":
                     pass
                 if current == "plcs":
+                    print("Functions")
+                    for f in l["functions"]:
+                        print(" - " + f["label"])
+                        print(" - - " + f["label"])
                     pass
 
     return system
-
-#------------------------------------------------------------------------------
 
 def main():
     if(len(sys.argv) < 3):
@@ -86,11 +89,14 @@ def main():
         sys.exit()
 
     config = str(sys.argv[1])
-    cycles = str(sys.argv[2])
+    out_dir = str(sys.argv[2])
 
     sysconf = startup(config)
 
     system = JSON2Obj(sysconf)
+
+    #print(system.getSimNodes())
+
 
     shutdown("no logs")
 
